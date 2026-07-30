@@ -120,14 +120,44 @@ function restoreGame() {
             STORAGE_KEY
         );
 
+    if (!saved) {
 
-    if (saved) {
+        remainingParticipants =
+            participants.slice();
 
-        try {
+        saveGame();
 
-            const savedIds =
-                JSON.parse(saved);
+        updateRemaining();
 
+        return;
+    }
+
+    try {
+
+        const savedIds =
+            JSON.parse(saved);
+
+        /*
+         * If saved data is empty or invalid,
+         * start a fresh game.
+         */
+
+        if (
+            !Array.isArray(savedIds) ||
+            savedIds.length === 0
+        ) {
+
+            remainingParticipants =
+                participants.slice();
+
+            saveGame();
+
+        } else {
+
+            /*
+             * Restore only IDs that still exist
+             * in Google Sheet.
+             */
 
             remainingParticipants =
                 participants.filter(
@@ -137,15 +167,14 @@ function restoreGame() {
                         )
                 );
 
-
-        } catch {
-
-            remainingParticipants =
-                participants.slice();
-
         }
 
-    } else {
+    } catch (error) {
+
+        console.error(
+            "Could not restore game:",
+            error
+        );
 
         remainingParticipants =
             participants.slice();
@@ -153,7 +182,6 @@ function restoreGame() {
         saveGame();
 
     }
-
 
     updateRemaining();
 
@@ -289,24 +317,44 @@ function enterParticipant() {
        people left.
     */
 
-    const possiblePeople =
-        remainingParticipants.filter(
-            person =>
-                String(person.id) !==
-                String(currentPlayer.id)
-        );
+const possiblePeople =
+    remainingParticipants.filter(
+        person =>
+            String(person.id) !==
+            String(currentPlayer.id)
+    );
 
+
+if (possiblePeople.length === 0) {
+
+    /*
+     * If the current player is the last
+     * remaining person, there is nobody
+     * else they can spin for.
+     */
 
     if (
-        possiblePeople.length === 0
+        remainingParticipants.length === 1
+        &&
+        String(
+            remainingParticipants[0].id
+        ) ===
+        String(currentPlayer.id)
     ) {
 
         error.textContent =
-            "There are no other participants left.";
+            "You are the last remaining participant. There is nobody else to select.";
 
-        return;
+    } else {
+
+        error.textContent =
+            "No other participants are available.";
 
     }
+
+    return;
+
+}
 
 
     /*
