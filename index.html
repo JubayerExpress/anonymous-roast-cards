@@ -22,16 +22,18 @@
 
 <body>
 
-    <div class="background-glow glow-one"></div>
-    <div class="background-glow glow-two"></div>
+    <!-- Background effects -->
+
+    <div class="glow glow-one"></div>
+    <div class="glow glow-two"></div>
 
 
     <main class="app">
 
 
-        <!-- =========================
+        <!-- =========================================
              HEADER
-        ========================== -->
+        ========================================== -->
 
         <header>
 
@@ -40,7 +42,7 @@
             </div>
 
             <h1>
-                Spin.<br>
+                Spin.
                 <span>Roast.</span>
                 Reveal.
             </h1>
@@ -52,9 +54,10 @@
         </header>
 
 
-        <!-- =========================
+
+        <!-- =========================================
              ENTRY SCREEN
-        ========================== -->
+        ========================================== -->
 
         <section
             id="entryScreen"
@@ -68,14 +71,13 @@
                 </h2>
 
                 <p class="subtitle">
-                    Enter your name and roll
-                    before spinning.
+                    Enter your name and roll before spinning.
                 </p>
 
 
                 <div class="input-group">
 
-                    <label>
+                    <label for="playerName">
                         Your Name
                     </label>
 
@@ -91,7 +93,7 @@
 
                 <div class="input-group">
 
-                    <label>
+                    <label for="playerRoll">
                         Your Roll Number
                     </label>
 
@@ -123,9 +125,10 @@
         </section>
 
 
-        <!-- =========================
+
+        <!-- =========================================
              WHEEL SCREEN
-        ========================== -->
+        ========================================== -->
 
         <section
             id="wheelScreen"
@@ -133,47 +136,67 @@
         >
 
 
+            <!-- Current player -->
+
             <div class="player-info">
 
+
                 <div>
-                    <span>SPINNING FOR</span>
+
+                    <span>
+                        SPINNING FOR
+                    </span>
 
                     <strong id="currentPlayer">
                         —
                     </strong>
+
                 </div>
 
+
                 <div>
-                    <span>ROLL</span>
+
+                    <span>
+                        ROLL
+                    </span>
 
                     <strong id="currentRoll">
                         —
                     </strong>
+
                 </div>
+
 
             </div>
 
 
+
+            <!-- Remaining counter -->
+
             <div class="remaining">
 
                 <span>
-                    NAMES REMAINING
+                    PEOPLE REMAINING
                 </span>
 
                 <strong id="remainingCount">
-                    90
+                    0
                 </strong>
 
             </div>
 
 
-            <!-- WHEEL -->
+
+            <!-- Wheel -->
 
             <div class="wheel-container">
+
+                <!-- Pointer -->
 
                 <div class="pointer">
                     ▼
                 </div>
+
 
                 <div
                     id="wheel"
@@ -188,6 +211,9 @@
 
             </div>
 
+
+
+            <!-- Spin button -->
 
             <button
                 id="spinButton"
@@ -206,9 +232,10 @@
         </section>
 
 
-        <!-- =========================
+
+        <!-- =========================================
              RESULT SCREEN
-        ========================== -->
+        ========================================== -->
 
         <section
             id="resultScreen"
@@ -217,25 +244,31 @@
 
             <div class="result-card">
 
+
                 <div class="result-label">
                     🎯 YOU GOT
                 </div>
+
 
                 <h2 id="selectedName">
                     —
                 </h2>
 
+
                 <div class="selected-roll">
+
                     ROLL:
+
                     <strong id="selectedRoll">
                         —
                     </strong>
+
                 </div>
 
 
                 <div class="success-message">
 
-                    ✓ This name has been
+                    ✓ This person has been
                     removed from the wheel.
 
                 </div>
@@ -248,14 +281,16 @@
                     NEXT PARTICIPANT →
                 </button>
 
+
             </div>
 
         </section>
 
 
-        <!-- =========================
+
+        <!-- =========================================
              FINISHED SCREEN
-        ========================== -->
+        ========================================== -->
 
         <section
             id="finishedScreen"
@@ -269,13 +304,13 @@
                 </div>
 
                 <h2>
-                    ALL NAMES ARE DONE!
+                    ALL DONE!
                 </h2>
 
                 <p>
-                    Everyone got their random
-                    assignment.
+                    Everyone has received their assignment.
                 </p>
+
 
                 <button
                     id="restartButton"
@@ -289,9 +324,15 @@
         </section>
 
 
+
+        <!-- =========================================
+             FOOTER
+        ========================================== -->
+
         <footer>
 
             Anonymous Roast Cards
+
             <br>
 
             <span>
