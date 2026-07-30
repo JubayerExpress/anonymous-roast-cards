@@ -3,7 +3,7 @@
 ===================================================== */
 
 const API_URL =
-    "YOUR_GOOGLE_APPS_SCRIPT_URL";
+      "https://script.google.com/macros/s/AKfycbzQ6RT7xXF0t5UJT_XJk3-OvoccYeomV76_qkaTiC2WcmCBVs5TkZbv-P45M0Br_MB7/exec";
 
 
 /* =====================================================
