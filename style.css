@@ -573,7 +573,7 @@ button {
 
 
 /* =========================================
-   WHEEL POINTER
+   POINTER
 ========================================= */
 
 .pointer {
@@ -683,6 +683,58 @@ button {
     opacity: 0.5;
 
     cursor: not-allowed;
+
+}
+
+
+/* =========================================
+   RESET BUTTON
+========================================= */
+
+.reset-button {
+
+    display: block;
+
+    margin:
+        15px auto 0;
+
+    padding:
+        12px 25px;
+
+    border-radius: 50px;
+
+    background:
+        transparent;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.2);
+
+    color: #aaa;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition:
+        0.2s;
+
+}
+
+
+.reset-button:hover {
+
+    color: white;
+
+    border-color:
+        #ff3864;
+
+    background:
+        rgba(255,56,100,0.1);
 
 }
 
