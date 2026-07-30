@@ -1,1 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Anonymous Roast Cards</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div class="background-glow glow-one"></div>
+    <div class="background-glow glow-two"></div>
+
+
+    <main class="app">
+
+
+        <!-- =========================
+             HEADER
+        ========================== -->
+
+        <header>
+
+            <div class="badge">
+                🔥 ANONYMOUS ROAST CARDS
+            </div>
+
+            <h1>
+                Spin.<br>
+                <span>Roast.</span>
+                Reveal.
+            </h1>
+
+            <p>
+                Find out who you're roasting.
+            </p>
+
+        </header>
+
+
+        <!-- =========================
+             ENTRY SCREEN
+        ========================== -->
+
+        <section
+            id="entryScreen"
+            class="screen"
+        >
+
+            <div class="card">
+
+                <h2>
+                    Enter Your Details
+                </h2>
+
+                <p class="subtitle">
+                    Enter your name and roll
+                    before spinning.
+                </p>
+
+
+                <div class="input-group">
+
+                    <label>
+                        Your Name
+                    </label>
+
+                    <input
+                        id="playerName"
+                        type="text"
+                        placeholder="Enter your name"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>
+                        Your Roll Number
+                    </label>
+
+                    <input
+                        id="playerRoll"
+                        type="text"
+                        placeholder="Enter your roll"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <p
+                    id="entryError"
+                    class="error"
+                ></p>
+
+
+                <button
+                    id="enterButton"
+                    class="primary-button"
+                >
+                    CONTINUE →
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             WHEEL SCREEN
+        ========================== -->
+
+        <section
+            id="wheelScreen"
+            class="screen hidden"
+        >
+
+
+            <div class="player-info">
+
+                <div>
+                    <span>SPINNING FOR</span>
+
+                    <strong id="currentPlayer">
+                        —
+                    </strong>
+                </div>
+
+                <div>
+                    <span>ROLL</span>
+
+                    <strong id="currentRoll">
+                        —
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <div class="remaining">
+
+                <span>
+                    NAMES REMAINING
+                </span>
+
+                <strong id="remainingCount">
+                    90
+                </strong>
+
+            </div>
+
+
+            <!-- WHEEL -->
+
+            <div class="wheel-container">
+
+                <div class="pointer">
+                    ▼
+                </div>
+
+                <div
+                    id="wheel"
+                    class="wheel"
+                >
+
+                    <div class="wheel-center">
+                        🎭
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="spinButton"
+                class="spin-button"
+            >
+                🎡 SPIN THE WHEEL
+            </button>
+
+
+            <p
+                id="spinError"
+                class="error"
+            ></p>
+
+
+        </section>
+
+
+        <!-- =========================
+             RESULT SCREEN
+        ========================== -->
+
+        <section
+            id="resultScreen"
+            class="screen hidden"
+        >
+
+            <div class="result-card">
+
+                <div class="result-label">
+                    🎯 YOU GOT
+                </div>
+
+                <h2 id="selectedName">
+                    —
+                </h2>
+
+                <div class="selected-roll">
+                    ROLL:
+                    <strong id="selectedRoll">
+                        —
+                    </strong>
+                </div>
+
+
+                <div class="success-message">
+
+                    ✓ This name has been
+                    removed from the wheel.
+
+                </div>
+
+
+                <button
+                    id="nextButton"
+                    class="primary-button"
+                >
+                    NEXT PARTICIPANT →
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             FINISHED SCREEN
+        ========================== -->
+
+        <section
+            id="finishedScreen"
+            class="screen hidden"
+        >
+
+            <div class="finished-card">
+
+                <div class="trophy">
+                    🏆
+                </div>
+
+                <h2>
+                    ALL NAMES ARE DONE!
+                </h2>
+
+                <p>
+                    Everyone got their random
+                    assignment.
+                </p>
+
+                <button
+                    id="restartButton"
+                    class="primary-button"
+                >
+                    RESTART GAME
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+
+            Anonymous Roast Cards
+            <br>
+
+            <span>
+                Play nice. Roast lightly. ❤️
+            </span>
+
+        </footer>
+
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
