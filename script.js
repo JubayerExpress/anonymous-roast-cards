@@ -77,7 +77,7 @@ const spinError =
 
 
 /* =====================================================
-   LOAD PARTICIPANTS
+   LOAD PARTICIPANTS FROM GOOGLE SHEET
 ===================================================== */
 
 async function loadParticipants() {
@@ -125,10 +125,6 @@ async function loadParticipants() {
         }
 
 
-        /*
-         * Restore saved game state.
-         */
-
         restoreGame();
 
 
@@ -149,7 +145,7 @@ async function loadParticipants() {
 
 
 /* =====================================================
-   RESTORE GAME
+   RESTORE SAVED GAME
 ===================================================== */
 
 function restoreGame() {
@@ -161,7 +157,7 @@ function restoreGame() {
 
 
     /*
-     * No previous game.
+     * First time opening the game.
      */
 
     if (!saved) {
@@ -184,10 +180,6 @@ function restoreGame() {
             JSON.parse(saved);
 
 
-        /*
-         * Make sure savedIds is actually an array.
-         */
-
         if (
             !Array.isArray(savedIds)
         ) {
@@ -199,11 +191,6 @@ function restoreGame() {
         }
 
 
-        /*
-         * Restore participants that are
-         * still in the remaining pool.
-         */
-
         remainingParticipants =
             participants.filter(
                 person =>
@@ -214,8 +201,8 @@ function restoreGame() {
 
 
         /*
-         * If somehow the saved list is empty,
-         * start fresh.
+         * If saved state is empty,
+         * start a fresh game.
          */
 
         if (
@@ -279,7 +266,7 @@ function saveGame() {
 
 
 /* =====================================================
-   UPDATE REMAINING COUNTER
+   UPDATE COUNTER
 ===================================================== */
 
 function updateRemaining() {
@@ -306,7 +293,7 @@ function normalize(text) {
 
 
 /* =====================================================
-   ENTER BUTTON
+   CONTINUE BUTTON
 ===================================================== */
 
 document
@@ -340,9 +327,9 @@ function enterParticipant() {
             .trim();
 
 
-    /* -----------------------------------------------
-       Validate name
-    ------------------------------------------------ */
+    /*
+     * Validate name.
+     */
 
     if (!name) {
 
@@ -354,9 +341,9 @@ function enterParticipant() {
     }
 
 
-    /* -----------------------------------------------
-       Validate roll
-    ------------------------------------------------ */
+    /*
+     * Validate roll.
+     */
 
     if (!roll) {
 
@@ -368,9 +355,9 @@ function enterParticipant() {
     }
 
 
-    /* -----------------------------------------------
-       Find participant in Google Sheet
-    ------------------------------------------------ */
+    /*
+     * Find person in Google Sheet.
+     */
 
     const player =
         participants.find(
@@ -383,9 +370,9 @@ function enterParticipant() {
         );
 
 
-    /* -----------------------------------------------
-       Invalid participant
-    ------------------------------------------------ */
+    /*
+     * Person not found.
+     */
 
     if (!player) {
 
@@ -397,10 +384,10 @@ function enterParticipant() {
     }
 
 
-    /* -----------------------------------------------
-       Check whether player is still part
-       of the game
-    ------------------------------------------------ */
+    /*
+     * Check if the player is still
+     * available in the pool.
+     */
 
     const playerStillRemaining =
         remainingParticipants.some(
@@ -411,8 +398,7 @@ function enterParticipant() {
 
 
     /*
-     * If the player's name was already selected
-     * previously, they cannot participate again.
+     * Player was already selected.
      */
 
     if (!playerStillRemaining) {
@@ -425,22 +411,20 @@ function enterParticipant() {
     }
 
 
-    /* -----------------------------------------------
-       Set current player
-    ------------------------------------------------ */
+    /*
+     * Set current player.
+     */
 
     currentPlayer = player;
 
 
-    /* -----------------------------------------------
-       Find possible targets
-       
-       IMPORTANT:
-       Current player's own name is excluded
-       ONLY for this spin.
-       
-       It is NOT permanently removed.
-    ------------------------------------------------ */
+    /*
+     * Exclude the spinner's own name.
+     *
+     * IMPORTANT:
+     * We DO NOT permanently remove
+     * the spinner.
+     */
 
     const possiblePeople =
         remainingParticipants.filter(
@@ -450,9 +434,9 @@ function enterParticipant() {
         );
 
 
-    /* -----------------------------------------------
-       No target available
-    ------------------------------------------------ */
+    /*
+     * If nobody else remains.
+     */
 
     if (
         possiblePeople.length === 0
@@ -466,9 +450,9 @@ function enterParticipant() {
     }
 
 
-    /* -----------------------------------------------
-       Update player information
-    ------------------------------------------------ */
+    /*
+     * Display player.
+     */
 
     document.getElementById(
         "currentPlayer"
@@ -485,9 +469,9 @@ function enterParticipant() {
     updateRemaining();
 
 
-    /* -----------------------------------------------
-       Show wheel
-    ------------------------------------------------ */
+    /*
+     * Change screen.
+     */
 
     entryScreen.classList.add(
         "hidden"
@@ -498,9 +482,9 @@ function enterParticipant() {
     );
 
 
-    /* -----------------------------------------------
-       Draw wheel
-    ------------------------------------------------ */
+    /*
+     * Draw wheel.
+     */
 
     renderWheel();
 
@@ -509,6 +493,7 @@ function enterParticipant() {
         "Current player:",
         currentPlayer
     );
+
 
     console.log(
         "Possible targets:",
@@ -531,7 +516,7 @@ function renderWheel() {
 
 
     /*
-     * Remove old names.
+     * Remove previous names.
      */
 
     wheel
@@ -545,9 +530,8 @@ function renderWheel() {
 
 
     /*
-     * Get people who can be selected.
-     
-     * Current spinner is excluded.
+     * Get people available
+     * for this spin.
      */
 
     const available =
@@ -572,7 +556,7 @@ function renderWheel() {
 
 
     /*
-     * Create wheel names.
+     * Place each name around wheel.
      */
 
     available.forEach(
@@ -618,7 +602,7 @@ function renderWheel() {
 
 
 /* =====================================================
-   WHEEL RADIUS
+   GET WHEEL RADIUS
 ===================================================== */
 
 function getWheelRadius() {
@@ -666,9 +650,9 @@ function spinWheel() {
     spinError.textContent = "";
 
 
-    /* -----------------------------------------------
-       Get available targets
-    ------------------------------------------------ */
+    /*
+     * Find possible targets.
+     */
 
     const available =
         remainingParticipants.filter(
@@ -678,9 +662,9 @@ function spinWheel() {
         );
 
 
-    /* -----------------------------------------------
-       No target
-    ------------------------------------------------ */
+    /*
+     * No target.
+     */
 
     if (
         available.length === 0
@@ -702,9 +686,9 @@ function spinWheel() {
     ).disabled = true;
 
 
-    /* -----------------------------------------------
-       Random selection
-    ------------------------------------------------ */
+    /*
+     * Random target.
+     */
 
     const randomIndex =
         Math.floor(
@@ -718,19 +702,14 @@ function spinWheel() {
 
 
     console.log(
-        "Selected:",
+        "Selected person:",
         selectedPerson
     );
 
 
-    /* -----------------------------------------------
-       IMPORTANT
-       
-       Remove ONLY the selected person
-       permanently.
-       
-       The spinner remains in the pool.
-    ------------------------------------------------ */
+    /*
+     * Permanently remove selected person.
+     */
 
     remainingParticipants =
         remainingParticipants.filter(
@@ -740,9 +719,12 @@ function spinWheel() {
         );
 
 
-    /* -----------------------------------------------
-       Save immediately
-    ------------------------------------------------ */
+    /*
+     * SAVE IMMEDIATELY.
+     *
+     * This means refreshing the page
+     * will not bring the selected person back.
+     */
 
     saveGame();
 
@@ -750,9 +732,9 @@ function spinWheel() {
     updateRemaining();
 
 
-    /* -----------------------------------------------
-       Wheel animation
-    ------------------------------------------------ */
+    /*
+     * Spin animation.
+     */
 
     const extraRotation =
         1800 +
@@ -772,9 +754,9 @@ function spinWheel() {
         `rotate(${currentRotation}deg)`;
 
 
-    /* -----------------------------------------------
-       Wait for animation
-    ------------------------------------------------ */
+    /*
+     * Wait for animation.
+     */
 
     setTimeout(
         showResult,
@@ -843,6 +825,10 @@ function nextParticipant() {
     selectedPerson = null;
 
 
+    /*
+     * Clear inputs.
+     */
+
     playerNameInput.value = "";
 
     playerRollInput.value = "";
@@ -850,6 +836,12 @@ function nextParticipant() {
 
     entryError.textContent = "";
 
+    spinError.textContent = "";
+
+
+    /*
+     * Hide result.
+     */
 
     resultScreen.classList.add(
         "hidden"
@@ -890,10 +882,13 @@ function nextParticipant() {
     ).disabled = false;
 
 
+    /*
+     * Show entry screen.
+     */
+
     wheelScreen.classList.add(
         "hidden"
     );
-
 
     entryScreen.classList.remove(
         "hidden"
@@ -969,7 +964,7 @@ function restartGame() {
 
 
     /*
-     * Restore all participants.
+     * Restore everybody.
      */
 
     remainingParticipants =
@@ -1003,7 +998,16 @@ function restartGame() {
 
 
     /*
-     * Reset inputs.
+     * Reset button.
+     */
+
+    document.getElementById(
+        "spinButton"
+    ).disabled = false;
+
+
+    /*
+     * Clear inputs.
      */
 
     playerNameInput.value = "";
@@ -1012,6 +1016,8 @@ function restartGame() {
 
 
     entryError.textContent = "";
+
+    spinError.textContent = "";
 
 
     /*
@@ -1041,7 +1047,164 @@ function restartGame() {
 
 
 /* =====================================================
-   START GAME
+   RESET BUTTON
+===================================================== */
+
+document
+    .getElementById(
+        "resetButton"
+    )
+    .addEventListener(
+        "click",
+        resetGame
+    );
+
+
+function resetGame() {
+
+    /*
+     * Confirmation prevents accidental reset.
+     */
+
+    const confirmed =
+        confirm(
+            "⚠️ RESET THE GAME?\n\nAll selected names will return to the wheel."
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    /*
+     * Restore everyone from Google Sheet.
+     */
+
+    remainingParticipants =
+        participants.slice();
+
+
+    /*
+     * Save fresh state.
+     */
+
+    saveGame();
+
+
+    /*
+     * Reset variables.
+     */
+
+    currentPlayer = null;
+
+    selectedPerson = null;
+
+    spinning = false;
+
+    currentRotation = 0;
+
+
+    /*
+     * Reset wheel rotation.
+     */
+
+    document.getElementById(
+        "wheel"
+    ).style.transform =
+        "rotate(0deg)";
+
+
+    /*
+     * Enable spin button.
+     */
+
+    document.getElementById(
+        "spinButton"
+    ).disabled = false;
+
+
+    /*
+     * Clear input fields.
+     */
+
+    playerNameInput.value = "";
+
+    playerRollInput.value = "";
+
+
+    /*
+     * Clear error messages.
+     */
+
+    entryError.textContent = "";
+
+    spinError.textContent = "";
+
+
+    /*
+     * Hide all other screens.
+     */
+
+    wheelScreen.classList.add(
+        "hidden"
+    );
+
+    resultScreen.classList.add(
+        "hidden"
+    );
+
+    finishedScreen.classList.add(
+        "hidden"
+    );
+
+
+    /*
+     * Return to entry screen.
+     */
+
+    entryScreen.classList.remove(
+        "hidden"
+    );
+
+
+    /*
+     * Update counter.
+     */
+
+    updateRemaining();
+
+
+    /*
+     * Go to top.
+     */
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: "smooth"
+
+    });
+
+
+    console.log(
+        "GAME RESET!"
+    );
+
+
+    console.log(
+        "Participants restored:",
+        remainingParticipants
+    );
+
+}
+
+
+/* =====================================================
+   START
 ===================================================== */
 
 loadParticipants();
