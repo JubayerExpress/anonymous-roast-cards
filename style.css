@@ -853,3 +853,36 @@ footer span {
     }
 
 }
+/* =========================
+   WHEEL NAMES
+========================= */
+
+.wheel-name {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform-origin:
+        center center;
+
+    width: 120px;
+
+    margin-left: -60px;
+
+    text-align: center;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    color: white;
+
+    text-shadow:
+        0 2px 5px
+        rgba(0,0,0,0.8);
+
+    pointer-events: none;
+
+}
