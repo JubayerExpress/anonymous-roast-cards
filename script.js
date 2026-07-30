@@ -1,38 +1,30 @@
 /* =====================================================
-   GOOGLE SHEET API
+   GOOGLE APPS SCRIPT API
 ===================================================== */
 
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbzQ6RT7xXF0t5UJT_XJk3-OvoccYeomV76_qkaTiC2WcmCBVs5TkZbv-P45M0Br_MB7/exec";
+    "https://script.google.com/macros/s/AKfycbxuLyMFHxWvdoF0ThFgVHaDzFDnezm_KaQzxf4_iixhr5yVAR170n8Cu1rKr6KZl0fM/exec";
 
 
 /* =====================================================
-   GAME VARIABLES
+   VARIABLES
 ===================================================== */
 
 let participants = [];
 
-let remainingParticipants = [];
+let availableForWheel = [];
 
 let currentPlayer = null;
 
-let selectedPerson = null;
+let selectedTarget = null;
 
 let spinning = false;
 
-let currentRotation = 0;
+let wheelRotation = 0;
 
 
 /* =====================================================
-   LOCAL STORAGE
-===================================================== */
-
-const STORAGE_KEY =
-    "anonymous_roast_remaining_v2";
-
-
-/* =====================================================
-   DOM ELEMENTS
+   DOM
 ===================================================== */
 
 const entryScreen =
@@ -55,12 +47,12 @@ const finishedScreen =
         "finishedScreen"
     );
 
-const playerNameInput =
+const nameInput =
     document.getElementById(
         "playerName"
     );
 
-const playerRollInput =
+const rollInput =
     document.getElementById(
         "playerRoll"
     );
@@ -77,67 +69,56 @@ const spinError =
 
 
 /* =====================================================
-   LOAD PARTICIPANTS FROM GOOGLE SHEET
+   LOAD PARTICIPANTS
 ===================================================== */
 
 async function loadParticipants() {
 
     try {
 
-        console.log(
-            "Loading participants..."
-        );
-
-
         const response =
-            await fetch(API_URL);
+            await fetch(
+                API_URL +
+                "?action=participants"
+            );
 
 
-        if (!response.ok) {
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
 
             throw new Error(
-                "API request failed."
+                data.error
             );
 
         }
 
 
         participants =
-            await response.json();
+            data.participants;
+
+
+        document.getElementById(
+            "gameInfo"
+        ).textContent =
+            data.gameId;
 
 
         console.log(
-            "Participants received:",
+            "Participants:",
             participants
         );
 
 
-        if (
-            !Array.isArray(participants)
-            ||
-            participants.length === 0
-        ) {
-
-            throw new Error(
-                "No participants found."
-            );
-
-        }
-
-
-        restoreGame();
-
-
     } catch (error) {
 
-        console.error(
-            "Loading error:",
-            error
-        );
+        console.error(error);
 
 
         entryError.textContent =
-            "Could not load participants. Check your Google Sheet API.";
+            "Unable to connect to the game server.";
 
     }
 
@@ -145,191 +126,35 @@ async function loadParticipants() {
 
 
 /* =====================================================
-   RESTORE SAVED GAME
-===================================================== */
-
-function restoreGame() {
-
-    const saved =
-        localStorage.getItem(
-            STORAGE_KEY
-        );
-
-
-    /*
-     * First time opening the game.
-     */
-
-    if (!saved) {
-
-        remainingParticipants =
-            participants.slice();
-
-        saveGame();
-
-        updateRemaining();
-
-        return;
-
-    }
-
-
-    try {
-
-        const savedIds =
-            JSON.parse(saved);
-
-
-        if (
-            !Array.isArray(savedIds)
-        ) {
-
-            throw new Error(
-                "Invalid saved game."
-            );
-
-        }
-
-
-        remainingParticipants =
-            participants.filter(
-                person =>
-                    savedIds.includes(
-                        String(person.id)
-                    )
-            );
-
-
-        /*
-         * If saved state is empty,
-         * start a fresh game.
-         */
-
-        if (
-            remainingParticipants.length === 0
-        ) {
-
-            remainingParticipants =
-                participants.slice();
-
-            saveGame();
-
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Restore error:",
-            error
-        );
-
-
-        remainingParticipants =
-            participants.slice();
-
-        saveGame();
-
-    }
-
-
-    updateRemaining();
-
-}
-
-
-/* =====================================================
-   SAVE GAME
-===================================================== */
-
-function saveGame() {
-
-    const ids =
-        remainingParticipants.map(
-            person =>
-                String(person.id)
-        );
-
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(ids)
-    );
-
-
-    console.log(
-        "Game saved:",
-        ids
-    );
-
-}
-
-
-/* =====================================================
-   UPDATE COUNTER
-===================================================== */
-
-function updateRemaining() {
-
-    document.getElementById(
-        "remainingCount"
-    ).textContent =
-        remainingParticipants.length;
-
-}
-
-
-/* =====================================================
-   NORMALIZE TEXT
-===================================================== */
-
-function normalize(text) {
-
-    return String(text)
-        .trim()
-        .toLowerCase();
-
-}
-
-
-/* =====================================================
-   CONTINUE BUTTON
+   CONTINUE
 ===================================================== */
 
 document
     .getElementById(
-        "enterButton"
+        "continueButton"
     )
     .addEventListener(
         "click",
-        enterParticipant
+        startParticipant
     );
 
 
-/* =====================================================
-   ENTER PARTICIPANT
-===================================================== */
-
-function enterParticipant() {
+async function startParticipant() {
 
     entryError.textContent = "";
 
 
     const name =
-        playerNameInput
+        nameInput
             .value
             .trim();
 
 
     const roll =
-        playerRollInput
+        rollInput
             .value
             .trim();
 
-
-    /*
-     * Validate name.
-     */
 
     if (!name) {
 
@@ -341,14 +166,10 @@ function enterParticipant() {
     }
 
 
-    /*
-     * Validate roll.
-     */
-
     if (!roll) {
 
         entryError.textContent =
-            "Please enter your roll number.";
+            "Please enter your roll.";
 
         return;
 
@@ -356,23 +177,21 @@ function enterParticipant() {
 
 
     /*
-     * Find person in Google Sheet.
+     * Verify locally first.
      */
 
     const player =
         participants.find(
             person =>
-                normalize(person.name) ===
+                normalize(
+                    person.name
+                ) ===
                 normalize(name)
                 &&
-                String(person.roll).trim() ===
-                String(roll).trim()
+                String(person.roll) ===
+                String(roll)
         );
 
-
-    /*
-     * Person not found.
-     */
 
     if (!player) {
 
@@ -384,94 +203,45 @@ function enterParticipant() {
     }
 
 
-    /*
-     * Check if the player is still
-     * available in the pool.
-     */
-
-    const playerStillRemaining =
-        remainingParticipants.some(
-            person =>
-                String(person.id) ===
-                String(player.id)
-        );
-
-
-    /*
-     * Player was already selected.
-     */
-
-    if (!playerStillRemaining) {
-
-        entryError.textContent =
-            "This participant has already been selected and removed from the game.";
-
-        return;
-
-    }
-
-
-    /*
-     * Set current player.
-     */
-
     currentPlayer = player;
 
-
-    /*
-     * Exclude the spinner's own name.
-     *
-     * IMPORTANT:
-     * We DO NOT permanently remove
-     * the spinner.
-     */
-
-    const possiblePeople =
-        remainingParticipants.filter(
-            person =>
-                String(person.id) !==
-                String(currentPlayer.id)
-        );
-
-
-    /*
-     * If nobody else remains.
-     */
-
-    if (
-        possiblePeople.length === 0
-    ) {
-
-        entryError.textContent =
-            "You are the last remaining participant. There is nobody else to select.";
-
-        return;
-
-    }
-
-
-    /*
-     * Display player.
-     */
 
     document.getElementById(
         "currentPlayer"
     ).textContent =
-        currentPlayer.name;
-
-
-    document.getElementById(
-        "currentRoll"
-    ).textContent =
-        currentPlayer.roll;
-
-
-    updateRemaining();
+        player.name;
 
 
     /*
-     * Change screen.
+     * Build visual wheel.
+     *
+     * We don't yet know the final target.
+     * The server will choose it when
+     * the user presses SPIN.
      */
+
+    availableForWheel =
+        participants.filter(
+            person =>
+                String(person.id) !==
+                String(player.id)
+        );
+
+
+    if (
+        availableForWheel.length === 0
+    ) {
+
+        entryError.textContent =
+            "You are the only participant.";
+
+        return;
+
+    }
+
+
+    renderWheel();
+
 
     entryScreen.classList.add(
         "hidden"
@@ -479,25 +249,6 @@ function enterParticipant() {
 
     wheelScreen.classList.remove(
         "hidden"
-    );
-
-
-    /*
-     * Draw wheel.
-     */
-
-    renderWheel();
-
-
-    console.log(
-        "Current player:",
-        currentPlayer
-    );
-
-
-    console.log(
-        "Possible targets:",
-        possiblePeople
     );
 
 }
@@ -515,10 +266,6 @@ function renderWheel() {
         );
 
 
-    /*
-     * Remove previous names.
-     */
-
     wheel
         .querySelectorAll(
             ".wheel-name"
@@ -529,70 +276,48 @@ function renderWheel() {
         );
 
 
-    /*
-     * Get people available
-     * for this spin.
-     */
-
-    const available =
-        remainingParticipants.filter(
-            person =>
-                String(person.id) !==
-                String(currentPlayer.id)
-        );
-
-
     const total =
-        available.length;
+        availableForWheel.length;
 
 
-    if (
-        total === 0
-    ) {
-
-        return;
-
-    }
-
-
-    /*
-     * Place each name around wheel.
-     */
-
-    available.forEach(
+    availableForWheel.forEach(
         (person, index) => {
 
             const angle =
-                (
-                    360 / total
-                ) * index;
+                (360 / total) *
+                index;
 
 
-            const nameElement =
+            const element =
                 document.createElement(
                     "div"
                 );
 
 
-            nameElement.className =
+            element.className =
                 "wheel-name";
 
 
-            nameElement.textContent =
+            element.textContent =
                 person.name;
 
 
-            nameElement.style.transform =
+            const radius =
+                wheel.offsetWidth *
+                0.39;
+
+
+            element.style.transform =
                 `
                 translate(-50%, -50%)
                 rotate(${angle}deg)
-                translateY(-${getWheelRadius()}px)
+                translateY(-${radius}px)
                 rotate(${-angle}deg)
                 `;
 
 
             wheel.appendChild(
-                nameElement
+                element
             );
 
         }
@@ -602,26 +327,7 @@ function renderWheel() {
 
 
 /* =====================================================
-   GET WHEEL RADIUS
-===================================================== */
-
-function getWheelRadius() {
-
-    const wheel =
-        document.getElementById(
-            "wheel"
-        );
-
-
-    return (
-        wheel.offsetWidth * 0.38
-    );
-
-}
-
-
-/* =====================================================
-   SPIN BUTTON
+   SPIN
 ===================================================== */
 
 document
@@ -630,15 +336,11 @@ document
     )
     .addEventListener(
         "click",
-        spinWheel
+        spin
     );
 
 
-/* =====================================================
-   SPIN WHEEL
-===================================================== */
-
-function spinWheel() {
+async function spin() {
 
     if (spinning) {
 
@@ -649,35 +351,6 @@ function spinWheel() {
 
     spinError.textContent = "";
 
-
-    /*
-     * Find possible targets.
-     */
-
-    const available =
-        remainingParticipants.filter(
-            person =>
-                String(person.id) !==
-                String(currentPlayer.id)
-        );
-
-
-    /*
-     * No target.
-     */
-
-    if (
-        available.length === 0
-    ) {
-
-        spinError.textContent =
-            "No other participant is available.";
-
-        return;
-
-    }
-
-
     spinning = true;
 
 
@@ -686,81 +359,203 @@ function spinWheel() {
     ).disabled = true;
 
 
-    /*
-     * Random target.
-     */
+    try {
 
-    const randomIndex =
-        Math.floor(
-            Math.random() *
-            available.length
+        /*
+         * Ask the SERVER to perform
+         * the actual random selection.
+         */
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            action:
+                                "spin",
+
+                            name:
+                                currentPlayer.name,
+
+                            roll:
+                                currentPlayer.roll
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Server result:",
+            data
         );
 
 
-    selectedPerson =
-        available[randomIndex];
+        if (!data.success) {
+
+            throw new Error(
+                data.error
+            );
+
+        }
 
 
-    console.log(
-        "Selected person:",
-        selectedPerson
-    );
+        selectedTarget =
+            data.target;
 
 
-    /*
-     * Permanently remove selected person.
-     */
+        /*
+         * Server says this person
+         * already participated.
+         */
 
-    remainingParticipants =
-        remainingParticipants.filter(
-            person =>
-                String(person.id) !==
-                String(selectedPerson.id)
+        if (
+            data.alreadyPlayed
+        ) {
+
+            showResult(
+                data.target,
+                true
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Animate wheel toward
+         * the server-selected target.
+         */
+
+        await animateToTarget(
+            selectedTarget.name
         );
 
 
-    /*
-     * SAVE IMMEDIATELY.
-     *
-     * This means refreshing the page
-     * will not bring the selected person back.
-     */
-
-    saveGame();
-
-
-    updateRemaining();
-
-
-    /*
-     * Spin animation.
-     */
-
-    const extraRotation =
-        1800 +
-        Math.floor(
-            Math.random() *
-            1800
+        showResult(
+            selectedTarget,
+            false
         );
 
 
-    currentRotation +=
-        extraRotation;
+    } catch (error) {
+
+        console.error(error);
 
 
-    document.getElementById(
-        "wheel"
-    ).style.transform =
-        `rotate(${currentRotation}deg)`;
+        spinError.textContent =
+            error.message ||
+            "Something went wrong.";
 
 
-    /*
-     * Wait for animation.
-     */
+        document.getElementById(
+            "spinButton"
+        ).disabled = false;
 
-    setTimeout(
-        showResult,
-        5200
+
+        spinning = false;
+
+    }
+
+}
+
+
+/* =====================================================
+   ANIMATE TO TARGET
+===================================================== */
+
+function animateToTarget(
+    targetName
+) {
+
+    return new Promise(
+        resolve => {
+
+            const index =
+                availableForWheel.findIndex(
+                    person =>
+                        normalize(
+                            person.name
+                        ) ===
+                        normalize(
+                            targetName
+                        )
+                );
+
+
+            if (index === -1) {
+
+                resolve();
+
+                return;
+
+            }
+
+
+            const total =
+                availableForWheel.length;
+
+
+            const slice =
+                360 / total;
+
+
+            /*
+             * Pointer is at the top.
+             */
+
+            const targetAngle =
+                index * slice;
+
+
+            const desiredRotation =
+                360 -
+                targetAngle;
+
+
+            const extraSpins =
+                360 * 7;
+
+
+            wheelRotation +=
+                extraSpins +
+                desiredRotation;
+
+
+            const wheel =
+                document.getElementById(
+                    "wheel"
+                );
+
+
+            wheel.style.transform =
+                `rotate(${wheelRotation}deg)`;
+
+
+            setTimeout(
+                resolve,
+                5200
+            );
+
+        }
     );
 
 }
@@ -770,21 +565,42 @@ function spinWheel() {
    SHOW RESULT
 ===================================================== */
 
-function showResult() {
+function showResult(
+    target,
+    alreadyPlayed
+) {
 
     spinning = false;
 
 
     document.getElementById(
-        "selectedName"
+        "targetName"
     ).textContent =
-        selectedPerson.name;
+        target.name;
 
 
-    document.getElementById(
-        "selectedRoll"
-    ).textContent =
-        selectedPerson.roll;
+    const message =
+        document.getElementById(
+            "alreadyMessage"
+        );
+
+
+    if (alreadyPlayed) {
+
+        message.classList.remove(
+            "hidden"
+        );
+
+        message.textContent =
+            "You already participated in this game. This is your existing assignment.";
+
+    } else {
+
+        message.classList.add(
+            "hidden"
+        );
+
+    }
 
 
     wheelScreen.classList.add(
@@ -805,400 +621,38 @@ function showResult() {
 
 
 /* =====================================================
-   NEXT PARTICIPANT
+   DONE
 ===================================================== */
 
 document
     .getElementById(
-        "nextButton"
+        "doneButton"
     )
     .addEventListener(
         "click",
-        nextParticipant
+        () => {
+
+            resultScreen.classList.add(
+                "hidden"
+            );
+
+            finishedScreen.classList.remove(
+                "hidden"
+            );
+
+        }
     );
-
-
-function nextParticipant() {
-
-    currentPlayer = null;
-
-    selectedPerson = null;
-
-
-    /*
-     * Clear inputs.
-     */
-
-    playerNameInput.value = "";
-
-    playerRollInput.value = "";
-
-
-    entryError.textContent = "";
-
-    spinError.textContent = "";
-
-
-    /*
-     * Hide result.
-     */
-
-    resultScreen.classList.add(
-        "hidden"
-    );
-
-
-    /*
-     * If nobody remains,
-     * game is finished.
-     */
-
-    if (
-        remainingParticipants.length === 0
-    ) {
-
-        finishGame();
-
-        return;
-
-    }
-
-
-    /*
-     * Reset wheel.
-     */
-
-    currentRotation = 0;
-
-
-    document.getElementById(
-        "wheel"
-    ).style.transform =
-        "rotate(0deg)";
-
-
-    document.getElementById(
-        "spinButton"
-    ).disabled = false;
-
-
-    /*
-     * Show entry screen.
-     */
-
-    wheelScreen.classList.add(
-        "hidden"
-    );
-
-    entryScreen.classList.remove(
-        "hidden"
-    );
-
-
-    updateRemaining();
-
-
-    window.scrollTo({
-
-        top: 0,
-
-        behavior: "smooth"
-
-    });
-
-}
 
 
 /* =====================================================
-   FINISH GAME
+   NORMALIZE
 ===================================================== */
 
-function finishGame() {
-
-    wheelScreen.classList.add(
-        "hidden"
-    );
-
-    entryScreen.classList.add(
-        "hidden"
-    );
-
-    resultScreen.classList.add(
-        "hidden"
-    );
-
-    finishedScreen.classList.remove(
-        "hidden"
-    );
-
-}
-
-
-/* =====================================================
-   RESTART GAME
-===================================================== */
-
-document
-    .getElementById(
-        "restartButton"
-    )
-    .addEventListener(
-        "click",
-        restartGame
-    );
-
-
-function restartGame() {
-
-    const confirmed =
-        confirm(
-            "Restart the entire game? All selected names will return."
-        );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    /*
-     * Restore everybody.
-     */
-
-    remainingParticipants =
-        participants.slice();
-
-
-    saveGame();
-
-
-    /*
-     * Reset variables.
-     */
-
-    currentPlayer = null;
-
-    selectedPerson = null;
-
-    spinning = false;
-
-    currentRotation = 0;
-
-
-    /*
-     * Reset wheel.
-     */
-
-    document.getElementById(
-        "wheel"
-    ).style.transform =
-        "rotate(0deg)";
-
-
-    /*
-     * Reset button.
-     */
-
-    document.getElementById(
-        "spinButton"
-    ).disabled = false;
-
-
-    /*
-     * Clear inputs.
-     */
-
-    playerNameInput.value = "";
-
-    playerRollInput.value = "";
-
-
-    entryError.textContent = "";
-
-    spinError.textContent = "";
-
-
-    /*
-     * Show entry screen.
-     */
-
-    finishedScreen.classList.add(
-        "hidden"
-    );
-
-    wheelScreen.classList.add(
-        "hidden"
-    );
-
-    resultScreen.classList.add(
-        "hidden"
-    );
-
-    entryScreen.classList.remove(
-        "hidden"
-    );
-
-
-    updateRemaining();
-
-}
-
-
-/* =====================================================
-   RESET BUTTON
-===================================================== */
-
-document
-    .getElementById(
-        "resetButton"
-    )
-    .addEventListener(
-        "click",
-        resetGame
-    );
-
-
-function resetGame() {
-
-    /*
-     * Confirmation prevents accidental reset.
-     */
-
-    const confirmed =
-        confirm(
-            "⚠️ RESET THE GAME?\n\nAll selected names will return to the wheel."
-        );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    /*
-     * Restore everyone from Google Sheet.
-     */
-
-    remainingParticipants =
-        participants.slice();
-
-
-    /*
-     * Save fresh state.
-     */
-
-    saveGame();
-
-
-    /*
-     * Reset variables.
-     */
-
-    currentPlayer = null;
-
-    selectedPerson = null;
-
-    spinning = false;
-
-    currentRotation = 0;
-
-
-    /*
-     * Reset wheel rotation.
-     */
-
-    document.getElementById(
-        "wheel"
-    ).style.transform =
-        "rotate(0deg)";
-
-
-    /*
-     * Enable spin button.
-     */
-
-    document.getElementById(
-        "spinButton"
-    ).disabled = false;
-
-
-    /*
-     * Clear input fields.
-     */
-
-    playerNameInput.value = "";
-
-    playerRollInput.value = "";
-
-
-    /*
-     * Clear error messages.
-     */
-
-    entryError.textContent = "";
-
-    spinError.textContent = "";
-
-
-    /*
-     * Hide all other screens.
-     */
-
-    wheelScreen.classList.add(
-        "hidden"
-    );
-
-    resultScreen.classList.add(
-        "hidden"
-    );
-
-    finishedScreen.classList.add(
-        "hidden"
-    );
-
-
-    /*
-     * Return to entry screen.
-     */
-
-    entryScreen.classList.remove(
-        "hidden"
-    );
-
-
-    /*
-     * Update counter.
-     */
-
-    updateRemaining();
-
-
-    /*
-     * Go to top.
-     */
-
-    window.scrollTo({
-
-        top: 0,
-
-        behavior: "smooth"
-
-    });
-
-
-    console.log(
-        "GAME RESET!"
-    );
-
-
-    console.log(
-        "Participants restored:",
-        remainingParticipants
-    );
+function normalize(value) {
+
+    return String(value)
+        .trim()
+        .toLowerCase();
 
 }
 
