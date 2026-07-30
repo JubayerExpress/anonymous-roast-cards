@@ -1,11 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
 
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -17,7 +11,9 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Anonymous Roast Cards</title>
+    <title>
+        Anonymous Roast Cards
+    </title>
 
     <link
         rel="stylesheet"
@@ -29,686 +25,250 @@
 
 <body>
 
-    <!-- Background glow -->
-
-    <div class="glow glow-one"></div>
-    <div class="glow glow-two"></div>
+<div class="background"></div>
 
 
-    <main class="app">
+<main class="app">
 
 
-        <!-- =========================================
-             HEADER
-        ========================================== -->
+    <!-- HEADER -->
 
-        <header>
+    <header>
 
-            <div class="badge">
-                🔥 ANONYMOUS ROAST CARDS
-            </div>
+        <div class="badge">
+            🔥 ANONYMOUS ROAST CARDS
+        </div>
 
-            <h1>
-                Spin.
-                <span>Roast.</span>
-                Reveal.
-            </h1>
+        <h1>
+            Spin.
+            <span>Roast.</span>
+            Reveal.
+        </h1>
 
-            <p>
-                Find out who you're roasting.
-            </p>
+        <p>
+            Enter your details and discover
+            who you're roasting.
+        </p>
 
-        </header>
-
-
-
-        <!-- =========================================
-             ENTRY SCREEN
-        ========================================== -->
-
-        <section
-            id="entryScreen"
-            class="screen"
+        <div
+            id="gameInfo"
+            class="game-info"
         >
+            Loading game...
+        </div>
 
-            <div class="card">
+    </header>
 
-                <h2>
-                    Enter Your Details
-                </h2>
 
-                <p class="subtitle">
-                    Enter your name and roll before spinning.
-                </p>
 
+    <!-- ENTRY -->
 
-                <div class="input-group">
-
-                    <label for="playerName">
-                        Your Name
-                    </label>
-
-                    <input
-                        id="playerName"
-                        type="text"
-                        placeholder="Enter your name"
-                        autocomplete="off"
-                    >
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label for="playerRoll">
-                        Your Roll Number
-                    </label>
-
-                    <input
-                        id="playerRoll"
-                        type="text"
-                        placeholder="Enter your roll"
-                        autocomplete="off"
-                    >
-
-                </div>
-
-
-                <p
-                    id="entryError"
-                    class="error"
-                ></p>
-
-
-                <button
-                    id="enterButton"
-                    class="primary-button"
-                >
-                    CONTINUE →
-                </button>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =========================================
-             WHEEL SCREEN
-        ========================================== -->
-
-        <section
-            id="wheelScreen"
-            class="screen hidden"
-        >
-
-
-            <!-- Current player -->
-
-            <div class="player-info">
-
-                <div>
-
-                    <span>
-                        SPINNING FOR
-                    </span>
-
-                    <strong id="currentPlayer">
-                        —
-                    </strong>
-
-                </div>
-
-
-                <div>
-
-                    <span>
-                        ROLL
-                    </span>
-
-                    <strong id="currentRoll">
-                        —
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- Remaining counter -->
-
-            <div class="remaining">
-
-                <span>
-                    PEOPLE REMAINING
-                </span>
-
-                <strong id="remainingCount">
-                    0
-                </strong>
-
-            </div>
-
-
-
-            <!-- Wheel -->
-
-            <div class="wheel-container">
-
-                <div class="pointer">
-                    ▼
-                </div>
-
-
-                <div
-                    id="wheel"
-                    class="wheel"
-                >
-
-                    <div class="wheel-center">
-                        🎭
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- Spin -->
-
-            <button
-                id="spinButton"
-                class="spin-button"
-            >
-                🎡 SPIN THE WHEEL
-            </button>
-
-
-            <!-- RESET -->
-
-            <button
-                id="resetButton"
-                class="reset-button"
-            >
-                ↻ RESET GAME
-            </button>
-
-
-            <p
-                id="spinError"
-                class="error"
-            ></p>
-
-
-        </section>
-
-
-
-        <!-- =========================================
-             RESULT SCREEN
-        ========================================== -->
-
-        <section
-            id="resultScreen"
-            class="screen hidden"
-        >
-
-            <div class="result-card">
-
-
-                <div class="result-label">
-                    🎯 YOU GOT
-                </div>
-
-
-                <h2 id="selectedName">
-                    —
-                </h2>
-
-
-                <div class="selected-roll">
-
-                    ROLL:
-
-                    <strong id="selectedRoll">
-                        —
-                    </strong>
-
-                </div>
-
-
-                <div class="success-message">
-
-                    ✓ This person has been
-                    removed from the wheel.
-
-                </div>
-
-
-                <button
-                    id="nextButton"
-                    class="primary-button"
-                >
-                    NEXT PARTICIPANT →
-                </button>
-
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =========================================
-             FINISHED SCREEN
-        ========================================== -->
-
-        <section
-            id="finishedScreen"
-            class="screen hidden"
-        >
-
-            <div class="finished-card">
-
-                <div class="trophy">
-                    🏆
-                </div>
-
-                <h2>
-                    ALL DONE!
-                </h2>
-
-                <p>
-                    Everyone has received their assignment.
-                </p>
-
-
-                <button
-                    id="restartButton"
-                    class="primary-button"
-                >
-                    RESTART GAME
-                </button>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =========================================
-             FOOTER
-        ========================================== -->
-
-        <footer>
-
-            Anonymous Roast Cards
-
-            <br>
-
-            <span>
-                Play nice. Roast lightly. ❤️
-            </span>
-
-        </footer>
-
-
-    </main>
-
-
-    <script src="script.js"></script>
-
-</body>
-
-</html>
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
+    <section
+        id="entryScreen"
+        class="screen"
     >
 
-    <title>Anonymous Roast Cards</title>
+        <div class="card">
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+            <h2>
+                Enter Your Details
+            </h2>
 
-</head>
-
-
-<body>
-
-    <!-- Background glow -->
-
-    <div class="glow glow-one"></div>
-    <div class="glow glow-two"></div>
-
-
-    <main class="app">
-
-
-        <!-- =========================================
-             HEADER
-        ========================================== -->
-
-        <header>
-
-            <div class="badge">
-                🔥 ANONYMOUS ROAST CARDS
-            </div>
-
-            <h1>
-                Spin.
-                <span>Roast.</span>
-                Reveal.
-            </h1>
-
-            <p>
-                Find out who you're roasting.
+            <p class="subtitle">
+                Your name and roll must match
+                the participant list.
             </p>
 
-        </header>
 
+            <label>
+                Your Name
+            </label>
 
-
-        <!-- =========================================
-             ENTRY SCREEN
-        ========================================== -->
-
-        <section
-            id="entryScreen"
-            class="screen"
-        >
-
-            <div class="card">
-
-                <h2>
-                    Enter Your Details
-                </h2>
-
-                <p class="subtitle">
-                    Enter your name and roll before spinning.
-                </p>
-
-
-                <div class="input-group">
-
-                    <label for="playerName">
-                        Your Name
-                    </label>
-
-                    <input
-                        id="playerName"
-                        type="text"
-                        placeholder="Enter your name"
-                        autocomplete="off"
-                    >
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label for="playerRoll">
-                        Your Roll Number
-                    </label>
-
-                    <input
-                        id="playerRoll"
-                        type="text"
-                        placeholder="Enter your roll"
-                        autocomplete="off"
-                    >
-
-                </div>
-
-
-                <p
-                    id="entryError"
-                    class="error"
-                ></p>
-
-
-                <button
-                    id="enterButton"
-                    class="primary-button"
-                >
-                    CONTINUE →
-                </button>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =========================================
-             WHEEL SCREEN
-        ========================================== -->
-
-        <section
-            id="wheelScreen"
-            class="screen hidden"
-        >
-
-
-            <!-- Current player -->
-
-            <div class="player-info">
-
-                <div>
-
-                    <span>
-                        SPINNING FOR
-                    </span>
-
-                    <strong id="currentPlayer">
-                        —
-                    </strong>
-
-                </div>
-
-
-                <div>
-
-                    <span>
-                        ROLL
-                    </span>
-
-                    <strong id="currentRoll">
-                        —
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- Remaining counter -->
-
-            <div class="remaining">
-
-                <span>
-                    PEOPLE REMAINING
-                </span>
-
-                <strong id="remainingCount">
-                    0
-                </strong>
-
-            </div>
-
-
-
-            <!-- Wheel -->
-
-            <div class="wheel-container">
-
-                <div class="pointer">
-                    ▼
-                </div>
-
-
-                <div
-                    id="wheel"
-                    class="wheel"
-                >
-
-                    <div class="wheel-center">
-                        🎭
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- Spin -->
-
-            <button
-                id="spinButton"
-                class="spin-button"
+            <input
+                id="playerName"
+                type="text"
+                placeholder="Your name"
+                autocomplete="off"
             >
-                🎡 SPIN THE WHEEL
-            </button>
 
 
-            <!-- RESET -->
+            <label>
+                Your Roll Number
+            </label>
 
-            <button
-                id="resetButton"
-                class="reset-button"
+            <input
+                id="playerRoll"
+                type="text"
+                placeholder="Your roll"
+                autocomplete="off"
             >
-                ↻ RESET GAME
-            </button>
 
 
-            <p
-                id="spinError"
+            <div
+                id="entryError"
                 class="error"
-            ></p>
+            ></div>
 
 
-        </section>
+            <button
+                id="continueButton"
+                class="primary-button"
+            >
+                CONTINUE →
+            </button>
 
+        </div>
 
-
-        <!-- =========================================
-             RESULT SCREEN
-        ========================================== -->
-
-        <section
-            id="resultScreen"
-            class="screen hidden"
-        >
-
-            <div class="result-card">
-
-
-                <div class="result-label">
-                    🎯 YOU GOT
-                </div>
-
-
-                <h2 id="selectedName">
-                    —
-                </h2>
-
-
-                <div class="selected-roll">
-
-                    ROLL:
-
-                    <strong id="selectedRoll">
-                        —
-                    </strong>
-
-                </div>
-
-
-                <div class="success-message">
-
-                    ✓ This person has been
-                    removed from the wheel.
-
-                </div>
-
-
-                <button
-                    id="nextButton"
-                    class="primary-button"
-                >
-                    NEXT PARTICIPANT →
-                </button>
-
-
-            </div>
-
-        </section>
+    </section>
 
 
 
-        <!-- =========================================
-             FINISHED SCREEN
-        ========================================== -->
+    <!-- WHEEL -->
 
-        <section
-            id="finishedScreen"
-            class="screen hidden"
-        >
+    <section
+        id="wheelScreen"
+        class="screen hidden"
+    >
 
-            <div class="finished-card">
-
-                <div class="trophy">
-                    🏆
-                </div>
-
-                <h2>
-                    ALL DONE!
-                </h2>
-
-                <p>
-                    Everyone has received their assignment.
-                </p>
-
-
-                <button
-                    id="restartButton"
-                    class="primary-button"
-                >
-                    RESTART GAME
-                </button>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =========================================
-             FOOTER
-        ========================================== -->
-
-        <footer>
-
-            Anonymous Roast Cards
-
-            <br>
+        <div class="player-card">
 
             <span>
-                Play nice. Roast lightly. ❤️
+                SPINNING FOR
             </span>
 
-        </footer>
+            <strong id="currentPlayer">
+                —
+            </strong>
+
+        </div>
 
 
-    </main>
+        <div class="wheel-container">
+
+            <div class="pointer">
+                ▼
+            </div>
+
+            <div
+                id="wheel"
+                class="wheel"
+            >
+
+                <div class="wheel-center">
+                    🎭
+                </div>
+
+            </div>
+
+        </div>
 
 
-    <script src="script.js"></script>
+        <button
+            id="spinButton"
+            class="spin-button"
+        >
+            🎡 SPIN THE WHEEL
+        </button>
+
+
+        <div
+            id="spinError"
+            class="error"
+        ></div>
+
+    </section>
+
+
+
+    <!-- RESULT -->
+
+    <section
+        id="resultScreen"
+        class="screen hidden"
+    >
+
+        <div class="result-card">
+
+            <div class="result-label">
+                🎯 YOU GOT
+            </div>
+
+
+            <h2 id="targetName">
+                —
+            </h2>
+
+
+            <p>
+                Your roast target has been
+                assigned.
+            </p>
+
+
+            <div
+                id="alreadyMessage"
+                class="already-message hidden"
+            >
+                You had already participated
+                in this game.
+            </div>
+
+
+            <button
+                id="doneButton"
+                class="primary-button"
+            >
+                DONE ✓
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- FINISHED -->
+
+    <section
+        id="finishedScreen"
+        class="screen hidden"
+    >
+
+        <div class="result-card">
+
+            <div class="trophy">
+                🏆
+            </div>
+
+            <h2>
+                ALL ASSIGNMENTS COMPLETE
+            </h2>
+
+            <p>
+                Everyone has received a target.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <footer>
+
+        Anonymous Roast Cards
+
+        <br>
+
+        Play nice. Roast lightly. ❤️
+
+    </footer>
+
+
+</main>
+
+
+<script src="script.js"></script>
 
 </body>
 
